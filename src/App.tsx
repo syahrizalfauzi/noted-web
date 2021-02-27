@@ -1,26 +1,63 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { createMuiTheme, CssBaseline, ThemeProvider } from "@material-ui/core";
+import { grey } from "@material-ui/core/colors";
+import EditPage from "./components/EditPage";
+import HomePage from "./components/HomePage";
+import LoginPage from "./components/LoginPage";
 
-function App() {
+import UndefinedPage from "./components/UndefinedPage";
+
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from "react-router-dom";
+import AppState from "./models/AppState";
+import { useSelector } from "react-scoped-model";
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: grey[800],
+    },
+    secondary: {
+      main: "#fff",
+    },
+  },
+  typography: {
+    fontFamily: `"Lato", "Roboto", sans-serif`,
+    h5: {
+      fontFamily: "spartan",
+      fontWeight: "bold",
+    },
+  },
+});
+
+export default function App() {
+  const loggedIn = useSelector(AppState, (state) => state.loggedIn);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <Router>
+        <CssBaseline />
+        <Switch>
+          <Route exact path="/">
+            <Redirect to={loggedIn ? "/home" : "/login"} />
+          </Route>
+          <Route path="/login">
+            {!loggedIn ? <LoginPage /> : <Redirect to="/home" />}
+          </Route>
+          <Route path="/home">
+            {loggedIn ? <HomePage /> : <Redirect to="/login" />}
+          </Route>
+          <Route path="/edit">
+            {loggedIn ? <EditPage /> : <Redirect to="/login" />}
+          </Route>
+          <Route path="*">
+            <UndefinedPage />
+          </Route>
+        </Switch>
+      </Router>
+    </ThemeProvider>
   );
 }
-
-export default App;
