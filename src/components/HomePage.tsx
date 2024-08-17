@@ -92,7 +92,7 @@ export default function HomePage() {
   );
 
   useEffect(() => {
-    if (!notesLoading) {
+    if (!notesLoading && notes) {
       const newNotes: Note[] = notes.docs.map((note) => {
         return {
           id: note.id,
